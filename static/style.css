@@ -1,0 +1,529 @@
+/* Global Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: white;
+  color: #333;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* App Container */
+#app-container {
+  display: flex;
+  flex-direction: row;
+  width: 95%;
+  height: 95vh;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10;
+  animation: slideIn 1s ease-in-out;
+}
+
+/* Sidebar */
+#sidebar {
+  width: 25%;
+  min-width: 250px;
+  background-color: #1f1f1f;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  color: #fff;
+  border-top-left-radius: 10px; /* Round top-left corner */
+  border-bottom-left-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+#sidebar h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.5em;
+  color: #4caf50;
+  text-align: center;
+  animation: slideInLeft 1s ease-in-out;
+}
+
+#new-chat-button{
+  padding: 10px 15px; /* Adjust padding for smaller buttons */
+  border-radius: 8px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px; /* Adjust font size */
+  transition: background-color 0.3s, transform 0.3s; /* Add transform transition */
+  margin: 0 5px; /* Minimal spacing between buttons */
+}
+
+#new-chat-button:hover {
+  background-color: #3a7e3e;
+  transform: translateY(-2px);
+  transform:scale(1.1);
+}
+#saved-chats-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#saved-chats-list li {
+  background-color: #2c2c2c;
+  color: #fff;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+#saved-chats-list li:hover {
+  background-color: #4caf50;
+  transform: translateY(-3px);
+  transform:scale(1.02);
+  cursor: pointer;
+}
+
+#saved-chats-list li button {
+  background-color: #e74c3c; /* Default color for buttons */
+  border: none;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  font-size: 16px;
+  margin-right: 5px; 
+}
+
+#saved-chats-list li button:first-child { 
+  background-color: #e74c3c; /* Keep the first button red */
+}
+
+#saved-chats-list li button:nth-child(3) { 
+  background-color: #e7d63c; /* Make the second button yellow */
+}
+#saved-chats-list li button:nth-child(3):hover { 
+  background-color: #e7cd3c; /* Make the second button yellow */
+  transform: translateY(0px);
+  transform:scale(1.2);
+  cursor: pointer;
+}
+
+#saved-chats-list li button:last-child {
+  background-color: #e74c3c; /* Keep the last button red */
+  margin-right: 0; 
+}
+
+#saved-chats-list li button:hover {
+  background-color: #8d2323;
+  transform: translateY(0px);
+  transform:scale(1.2);
+  cursor: pointer;
+}
+
+/* Chatbox */
+#chatbox {
+  min-width: 400px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #ecebeb;
+  border-left: 1px solid #ddd;
+  /*animation: fadeIn 1.5s ease-in-out;*/
+  overflow: hidden;
+  border-top-right-radius: 10px; /* Round top-right corner */
+  border-bottom-right-radius: 10px /* Ensure chatbox takes full width */
+}
+
+.tracking-in-expand {
+  display: inline-block;
+  animation: tracking-in-contract-bck-top 1s 
+}
+
+#conversation {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background-color: #ebe9e9;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.05); /* Ensure conversation takes full width */
+}
+
+
+.user-message {
+  text-align: right;
+  color: #4caf50;
+  margin-bottom: 10px;
+  animation: slideUp 0.3s ease-in-out;
+}
+
+.bot-message {
+  text-align: left;
+  color: #555;
+  margin-bottom: 10px;
+  animation: slideUp 0.5s ease-in-out;
+}
+
+
+/* Input Container */
+#input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: auto;
+  margin-top: 10px;
+  background-color: #f0f0f0; /* Unified background color */
+  border: none; /* Remove the border */
+  padding: 10px; /* Optional for better spacing */
+  border-radius: 8px;
+  justify-content: space-between ; /* Add rounding for smoother visuals */
+  position: relative;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: inherit; /* Use the same background as the container */
+  padding: 10px 15px;
+  width: 85%;
+  border-radius: 8px;
+  border: none; /* Remove the search bar border */
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05); /* Subtle depth effect */
+}
+
+#question {
+  padding: 12px;
+  border-radius: 8px;
+  margin-right: 10px;
+  border: none;
+  font-size: 16px;
+  outline: none;
+  color: #555;
+  width: 90%;
+  height: 65px;
+  overflow: auto; /* Enable scrolling */
+  resize: none; /* Prevent manual resizing (if applicable) */
+  background-color: inherit; /* Use the same background as the container */
+}
+
+#question:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+#send-button{
+  padding: 10px 30px; /* Wider button */
+  margin-left: 5px;
+  border-radius: 8px;
+  background-color: #4caf50;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+#send-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  transform:scale(1.1);
+}
+
+#mic-button {
+  padding: 10px 14px;
+  margin-right: 20px;
+  background-color: #f0f0f0; /* Faint green background */
+  border-radius: 10px;
+  font-size: 22px;
+  border: none;
+  color: #4caf50;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+#mic-button:hover {
+  background-color: #a5d6a7;
+  transform: translateY(-2px);
+  transform:scale(1.1);
+}
+
+#save-button {
+  padding: 14px 20px;        /* Smaller padding */
+  font-size: 18px;           /* Consistent font size *//* Match the bold text style */
+  border-radius: 8px;        /* Keep rounded corners */
+  background-color: #4caf50; /* Matching green color */
+  color: #fff;     
+  font-family: 'Roboto', sans-serif;          /* White text */
+  border: none;              /* No border for a cleaner look */
+  cursor: pointer;          /* Pointer cursor on hover */
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+#save-button:hover::before {
+  background-color: #45a049; /* Slightly darker green for hover */
+  transform: translateY(-2px); /* Lift effect on hover */
+  transform:scale(1.1);
+}
+
+#model-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+#model-container label {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+#model-select {
+  padding: 10px 30px 10px 10px; /* Added padding on the right for the dropdown arrow */
+  font-size: 16px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 20%;
+  margin-bottom: 15px;
+  transition: border-color 0.3s ease-in-out;
+  cursor: pointer; /* Change cursor to pointer */
+}
+
+#model-select:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+#model-select option {
+  color: #333;
+  background-color: #f9f9f9;
+}
+
+#model-select option:hover {
+  background-color: #a5d6a7; /* Light green background on hover */
+  color: #ffffff; /* White text for contrast */
+  transform:scale(1.2);
+}
+
+
+#custom-prompt {
+  padding: 12px;
+  font-size: 14px; /* Slightly smaller font size */
+  background-color: #ffffff;
+  border: 1px solid #4caf50;
+  border-radius: 8px;
+  width: 50%; /* Reduced to 50% width */
+  height: 75px; /* Slightly smaller height */
+  margin-top: 10px;
+  resize: none;
+  display: none; /* This will be toggled based on model selection */
+}
+
+#custom-prompt:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+
+
+@keyframes buttonSlideIn {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.save-chat-btn {
+  animation: buttonSlideIn 0.5s ease-in-out;
+}
+
+
+/* Modal Background */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Darker background for better contrast */
+  animation: fadeIn 0.6s ease-in-out; /* Smooth fade-in effect */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto; /* Ensures modal is centered */
+  padding: 40px 30px; /* More padding for a spacious feel */
+  border-radius: 15px; /* More rounded corners for a modern look */
+  width: 85%;
+  max-width: 500px; /* A smaller max-width for better proportions */
+  text-align: center;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+  animation: slideIn 0.6s ease-out;
+  transform: translateY(-50px); /* Starts slightly above */
+}
+
+/* Modal Button */
+.modal-content button {
+  margin-top: 25px; /* More space above the button */
+  padding: 14px 32px;
+  background-color: #4caf50; /* Original green color */
+  color: #fff;
+  border: none;
+  border-radius: 50px; /* Circular button shape */
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft button shadow */
+}
+
+/* Hover Effect for the Button */
+.modal-content button:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: translateY(-5px);
+  transform:scale(1.1); /* Slightly raised on hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); /* Increased shadow */
+}
+
+/* Chat-name Textarea */
+#chat-name {
+  padding: 15px; /* Increased padding */
+  font-size: 16px; /* Slightly larger font */
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 80%; /* Wider text box */
+  height: 30px; /* Increased height for a larger box */
+  margin-top: 15px;
+  resize: none; /* Prevent resizing */
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1); /* Added subtle inner shadow */
+}
+
+#chat-name:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+
+/* Input Textarea */
+
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ----------------------------------------------
+ * Generated by Animista on 2025-1-22 0:50:37
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info. 
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation tracking-in-contract-bck-top
+ * ----------------------------------------
+ */
+@-webkit-keyframes tracking-in-contract-bck-top {
+  0% {
+    letter-spacing: 1em;
+    -webkit-transform: translateZ(400px) translateY(-300px);
+            transform: translateZ(400px) translateY(-300px);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    -webkit-transform: translateZ(0) translateY(0);
+            transform: translateZ(0) translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes tracking-in-contract-bck-top {
+  0% {
+    letter-spacing: 1em;
+    -webkit-transform: translateZ(400px) translateY(-300px);
+            transform: translateZ(400px) translateY(-300px);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    -webkit-transform: translateZ(0) translateY(0);
+            transform: translateZ(0) translateY(0);
+    opacity: 1;
+  }
+}      
+
