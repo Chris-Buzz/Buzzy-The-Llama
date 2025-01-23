@@ -178,7 +178,6 @@ PyJWT==2.10.1
 pynndescent==0.5.13
 pyparsing==3.2.0
 pypinyin==0.53.0
-pypiwin32==223
 pyreadline3==3.5.4
 pysbd==0.3.4
 python-crfsuite==0.9.11
