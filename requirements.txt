@@ -180,6 +180,7 @@ pypinyin==0.53.0
 pypiwin32==223
 pyreadline3==3.5.4
 pysbd==0.3.4
+python_version==3.11.9
 python-crfsuite==0.9.11
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
