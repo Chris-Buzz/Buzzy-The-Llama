@@ -163,12 +163,23 @@ def ask():
         prompt = ChatPromptTemplate.from_template(template)
         chain = prompt | model
 
-        # Get the response from the Llama model
-        result = chain.invoke({"context": context, "question": user_input})
-        # Clean up the result by stripping unnecessary whitespace or characters
-        result = result.strip() if result else "Sorry, I didn't get that."
-        # Add user input and bot response to context for history
-        return jsonify({"answer": result})
+        try:
+            # Handle streaming response
+            stream = model.client.stream({"context": context, "question": user_input})
+            result = ""
+            async for chunk in stream:
+                result += chunk["text"]  # Assuming the streaming client sends chunks of text
+
+            # Clean up the result by stripping unnecessary whitespace or characters
+            result = result.strip() if result else "Sorry, I didn't get that."
+
+            # Add user input and bot response to context for history
+            return jsonify({"answer": result})
+        
+        except httpx.ConnectError as e:
+            logging.error(f"Failed to connect to service: {str(e)}")
+            logging.error(f"Request URL: {data.get('url')}")
+            return jsonify({"error": "Service connection failed"}), 500
     
     return jsonify({"error": "No question provided"}), 400
 
