@@ -4,7 +4,16 @@ from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 import speech_recognition as sr
 import os #Imported for file operations(ex: deleting files)
-import json #Imported for handling Json data
+import json
+import logging
+
+try:
+    response = self._client.stream(*args, **kwargs)
+except httpx.ConnectError as e:
+    logging.error(f"Failed to connect to service: {str(e)}")
+    logging.error(f"Request URL: {args[0]}")  # Log the URL being accessed
+    raise
+#Imported for handling Json data
 
 app = Flask(__name__)
 
