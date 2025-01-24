@@ -1,5 +1,5 @@
 #Import all necessary libraries for Flask, ollama and langchain
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template,send_from_directory
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 import speech_recognition as sr
@@ -12,10 +12,15 @@ app = Flask(__name__)
 model = OllamaLLM(model="llama3.1")
 
 
+
 @app.route('/')
 def index():
     return render_template('index.html') #Using Flask render the html template
 
+# Serve static files manually if needed
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
 #Intialize variables that will be globally used. Default they have nothing assigned
 context = "" 
 conversation = ""
@@ -381,5 +386,4 @@ def reset_context():
     return jsonify({"status": "success"})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
     app.run(debug=True)
