@@ -1,5 +1,5 @@
 #Import all necessary libraries for Flask, ollama and langchain
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 import speech_recognition as sr
@@ -21,6 +21,12 @@ context = ""
 conversation = ""
 last_modelType = "basic"  # Default model type
 last_customPrompt = "" 
+
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
+
 
 @app.route('/ask', methods=['POST']) #Method that takes the user input, modelType and custom prompt from the frontend, retrieves the data and passes it to the ollama AI model for a response
 def ask():
