@@ -38,7 +38,7 @@ last_modelType = "basic"  # Default model type
 last_customPrompt = "" 
 
 @app.route('/ask', methods=['POST']) #Method that takes the user input, modelType and custom prompt from the frontend, retrieves the data and passes it to the ollama AI model for a response
-def ask():
+async def ask():
     global context, custom_prompt, conversation , last_customPrompt, last_modelType
     data = request.json
     user_input = data.get("question")
