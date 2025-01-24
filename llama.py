@@ -6,6 +6,7 @@ import speech_recognition as sr
 import os #Imported for file operations(ex: deleting files)
 import json
 import logging
+import httpx
 
 try:
     response = self._client.stream(*args, **kwargs)
