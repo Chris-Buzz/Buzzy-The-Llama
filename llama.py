@@ -1,36 +1,21 @@
 #Import all necessary libraries for Flask, ollama and langchain
-from flask import Flask, request, jsonify, render_template,send_from_directory
+from flask import Flask, request, jsonify, render_template
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 import speech_recognition as sr
 import os #Imported for file operations(ex: deleting files)
-import json
-import logging
-import httpx
-
-try:
-    response = self._client.stream(*args, **kwargs)
-except httpx.ConnectError as e:
-    logging.error(f"Failed to connect to service: {str(e)}")
-    logging.error(f"Request URL: {args[0]}")  # Log the URL being accessed
-    raise
-#Imported for handling Json data
+import json #Imported for handling Json data
 
 app = Flask(__name__)
 
 # Initialize the model that will be used. Code could be changed to any ollama model currently available.
-model = OllamaLLM(model="llama3.1")
-
+model = OllamaLLM(model="llama3.2")
 
 
 @app.route('/')
 def index():
     return render_template('index.html') #Using Flask render the html template
 
-# Serve static files manually if needed
-@app.route('/static/<path:filename>')
-def static_files(filename):
-    return send_from_directory('static', filename)
 #Intialize variables that will be globally used. Default they have nothing assigned
 context = "" 
 conversation = ""
@@ -38,7 +23,7 @@ last_modelType = "basic"  # Default model type
 last_customPrompt = "" 
 
 @app.route('/ask', methods=['POST']) #Method that takes the user input, modelType and custom prompt from the frontend, retrieves the data and passes it to the ollama AI model for a response
-async def ask():
+def ask():
     global context, custom_prompt, conversation , last_customPrompt, last_modelType
     data = request.json
     user_input = data.get("question")
@@ -163,23 +148,12 @@ async def ask():
         prompt = ChatPromptTemplate.from_template(template)
         chain = prompt | model
 
-        try:
-            # Handle streaming response
-            stream = model.client.stream({"context": context, "question": user_input})
-            result = ""
-            async for chunk in stream:
-                result += chunk["text"]  # Assuming the streaming client sends chunks of text
-
-            # Clean up the result by stripping unnecessary whitespace or characters
-            result = result.strip() if result else "Sorry, I didn't get that."
-
-            # Add user input and bot response to context for history
-            return jsonify({"answer": result})
-        
-        except httpx.ConnectError as e:
-            logging.error(f"Failed to connect to service: {str(e)}")
-            logging.error(f"Request URL: {data.get('url')}")
-            return jsonify({"error": "Service connection failed"}), 500
+        # Get the response from the Llama model
+        result = chain.invoke({"context": context, "question": user_input})
+        # Clean up the result by stripping unnecessary whitespace or characters
+        result = result.strip() if result else "Sorry, I didn't get that."
+        # Add user input and bot response to context for history
+        return jsonify({"answer": result})
     
     return jsonify({"error": "No question provided"}), 400
 
@@ -407,4 +381,4 @@ def reset_context():
     return jsonify({"status": "success"})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(debug=True)
