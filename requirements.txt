@@ -179,7 +179,6 @@ PyJWT==2.10.1
 pynndescent==0.5.13
 pyparsing==3.2.0
 pypinyin==0.53.0
-pypiwin32==223
 pyreadline3==3.5.4
 pysbd==0.3.4
 python-crfsuite==0.9.11
@@ -187,7 +186,6 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pyttsx3==2.98
 pytz==2024.2
-pywin32==308
 pywin32-ctypes==0.2.3
 PyYAML==6.0.2
 regex==2024.11.6
