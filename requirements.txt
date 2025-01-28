@@ -1,5 +1,6 @@
 langchain-ollama == 0.2.2
 gunicorn == 23.0.0
+langchain-core == 0.3.32
 ollama==0.4.7
 aiohappyeyeballs==2.4.3
 aiohttp==3.11.0
