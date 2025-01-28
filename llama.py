@@ -2,7 +2,6 @@
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
-import speech_recognition as sr
 import os #Imported for file operations(ex: deleting files)
 import json #Imported for handling Json data
 
