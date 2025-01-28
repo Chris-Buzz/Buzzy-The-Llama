@@ -21,7 +21,27 @@ document.addEventListener('DOMContentLoaded', function() {
     let firstEntry = true;
     let chatSaved = false;
 
-    // Saving a new chat with chat name
+    const themeSwitch = document.getElementById('theme-switch');
+    
+        // Load the saved theme from local storage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.body.classList.add(savedTheme);
+        themeSwitch.checked = savedTheme === 'dark-mode';
+    }
+    
+    themeSwitch.addEventListener('change', () => {
+        if (themeSwitch.checked) {
+                document.body.classList.add('dark-mode');
+                document.body.classList.remove('light-mode');
+                localStorage.setItem('theme', 'dark-mode');
+        } else {
+                document.body.classList.add('light-mode');
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light-mode');
+        }
+    });
+
 
 
     const customPromptExamples = [
@@ -184,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         conversation.scrollTop = conversation.scrollHeight;  // Scroll to the bottom
 
         // Send the question and model type to the backend and fetch the response
-        const response = await fetch('/ask', {
+        const response = await fetch('http://localhost:5000/ask', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -255,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function saveChatAutomatically() {
         const conversation = document.getElementById('conversation').innerHTML;
-        const response = await fetch('/autoSave_chat', {
+        const response = await fetch('http://localhost:5000/autoSave_chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ conversation }),
@@ -275,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const customPromptText = customPrompt.value;
         const modelType = modelSelect.value;
 
-        const saveResponse = await fetch('/save_chat', {
+        const saveResponse = await fetch('http://localhost:5000/save_chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -302,23 +322,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadSavedChats() {
         try {
-            const response = await fetch('/load_chats'); // Corrected endpoint
+            const response = await fetch('http://localhost:5000/load_chats');
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            const data = await response.json(); 
+            const data = await response.json();
             savedChatsList.innerHTML = ''; // Clear the existing list
         
             data.chats.forEach((chat, index) => {
                 const li = document.createElement('li');
                 li.innerHTML = `
+                <div class="left-buttons">
+                    <button class="rename-chat-btn" onclick="renameChat('${chat.chatName}')">🖋</button>
                     <span>${chat.chatName || `Chat ${index + 1}`}</span>
-                    <button onclick="openChat('${chat.chatName}')">Open</button>
-                    <button class="rename-chat-btn" onclick="renameChat('${chat.chatName}')">✏️</button>
+                </div>
+                <div class="right-buttons">
+                    <button class="open-chat-btn" onclick="openChat('${chat.chatName}')">Open</button>
                     <button class="delete-chat-btn" onclick="deleteChat('${chat.chatName}')">🗑️</button>
-                `;
+                </div>
+            `;
+            
                 savedChatsList.appendChild(li);
-                li.querySelector('rename-chat-btn').classList.add('rename-button-style'); 
             });
         
             if (data.chats.length === 0) {
@@ -336,14 +360,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const newChatName = prompt("Enter a new name for the chat:", chatName);
     
         if (newChatName) {
-            // Send the new chat name to the server to update it
-            updateChatName(chatName, newChatName);
+            if(newChatName == chatName){
+                openChat(chatName);
+            }
+            else{
+                updateChatName(chatName, newChatName); // Send the new chat name to the server to update it
+            }
+    
         }
+        
     };
 
     async function updateChatName(oldName, newName) {
         try {
-            const response = await fetch(`/update_chat_name/${oldName}`, {
+            const response = await fetch(`http://localhost:5000/update_chat_name/${oldName}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ newName: newName })
@@ -372,7 +402,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // When user clicks Yes, delete chat
     deleteChatYesButton.addEventListener('click', async function() {
         const chatName = deleteChatModalText.textContent.split('"')[1]; // Get the chat name from the text
-        const response = await fetch(`/delete_chat/${chatName}`, {
+        const response = await fetch(`http://localhost:5000/delete_chat/${chatName}`, {
             method: 'DELETE'
         });
 
@@ -402,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Opening an existing chat
     window.openChat = async function(chatName) {
-        const response = await fetch(`/open_chat/${chatName}`); // Fetch specific chat using its name
+        const response = await fetch(`http://localhost:5000/open_chat/${chatName}`); // Fetch specific chat using its name
         const data = await response.json();
         // Handle the loaded chat data (conversation, customPrompt, etc.)
         if (data.chat) {
@@ -430,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatSaved = false;
         resetCustom();
         popupMessage.classList.remove('visible');
-        fetch('/reset_context', { method: 'POST' });
+        fetch('http://localhost:5000/reset_context', { method: 'POST' });
     }
 
     function resetCustom() {
