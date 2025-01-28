@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         conversation.scrollTop = conversation.scrollHeight;  // Scroll to the bottom
 
         // Send the question and model type to the backend and fetch the response
-        const response = await fetch('http://localhost:5000/ask', {
+        const response = await fetch('/ask', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
