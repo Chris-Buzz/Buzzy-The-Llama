@@ -161,7 +161,11 @@ def ask():
 
 
         # Get the response from the Llama model
-        result = chain.invoke({"context": context, "question": user_input})
+        try:
+            result = chain.invoke({"context": context, "question": user_input})
+        except Exception as e:
+            print("Error:", e)
+
         # Clean up the result by stripping unnecessary whitespace or characters
         result = result.strip() if result else "Sorry, I didn't get that."
         print(f"Result: {result}")
