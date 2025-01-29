@@ -153,6 +153,12 @@ def ask():
         prompt = ChatPromptTemplate.from_template(template)
         chain = prompt | model
 
+        print(f"Context: {context}")
+        print(f"User input: {user_input}")
+        print(f"Template: {template}")
+        print(f"Model Type: {model_type}")
+
+
         # Get the response from the Llama model
         result = chain.invoke({"context": context, "question": user_input})
         # Clean up the result by stripping unnecessary whitespace or characters
