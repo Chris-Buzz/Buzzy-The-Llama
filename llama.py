@@ -156,13 +156,15 @@ def ask():
         print(f"Context: {context}")
         print(f"User input: {user_input}")
         print(f"Template: {template}")
-        print(f"Model Type: {model_type}")
+        print(f"Model: {model}")
+
 
 
         # Get the response from the Llama model
         result = chain.invoke({"context": context, "question": user_input})
         # Clean up the result by stripping unnecessary whitespace or characters
         result = result.strip() if result else "Sorry, I didn't get that."
+        print(f"Result: {result}")
         # Add user input and bot response to context for history
         return jsonify({"answer": result})
     
