@@ -4,11 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buzzy the Llama</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <div id="app-container">
     <div id="sidebar">
+      <label class="switch">
+        <input type="checkbox" id="theme-switch">
+        <span class="slider round"></span>
+      </label>
       <h2>Saved Chats</h2>
       <ul id="saved-chats-list"></ul>
       <button id="new-chat-button">New Chat</button>
@@ -63,6 +67,6 @@
     </div>
 </div>
 
-  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  <script src="/static/app.js"></script>
 </body>
 </html>
