@@ -36,7 +36,10 @@ def ask():
     custom_prompt = data.get("customPrompt")
     last_modelType = data.get("modelType", "basic") 
     last_customPrompt = custom_prompt
-    context = conversation #Set the context of the conversation equal to the ongoing conversation
+    if (conversation):
+        context = conversation #Set the context of the conversation equal to the ongoing conversation if there is one. This should occur after a chat is saved
+    else:
+        context += user_input #Otherwise set the contex equal to all user inputs 
 
     # Templates for different pre-made conversation types
     templates = {
