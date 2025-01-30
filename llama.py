@@ -164,13 +164,16 @@ def ask():
 
 
         # Get the response from the Llama model
+        # Attempt to invoke the model
         try:
             result = chain.invoke({"context": context, "question": user_input})
         except Exception as e:
-            print("Error:", e)
+            print(f"Error during invocation: {e}")
+            result = "Sorry, something went wrong."
 
-        # Clean up the result by stripping unnecessary whitespace or characters
+        # Strip whitespace and return the result
         result = result.strip() if result else "Sorry, I didn't get that."
+
         print(f"Result: {result}")
         # Add user input and bot response to context for history
         return jsonify({"answer": result})
