@@ -27,3 +27,5 @@ EXPOSE 5000
 
 # Start Ollama model (ensure Ollama is running on the expected port)
 CMD ["bash", "-c", "ollama start && gunicorn -w 4 -b 0.0.0.0:5000 llama:app"]
+docker run --network="host" -p 5000:5000 llama-app
+
