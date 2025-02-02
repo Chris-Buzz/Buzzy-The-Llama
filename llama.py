@@ -1,14 +1,12 @@
 #Import all necessary libraries for Flask, ollama and langchain
 from flask import Flask, request, jsonify, render_template, send_from_directory
-from langchain_ollama import OllamaLLM
-from langchain_core.prompts import ChatPromptTemplate
+import ollama
 import os #Imported for file operations(ex: deleting files)
 import json #Imported for handling Json data
 
 app = Flask(__name__)
 
 # Initialize the model that will be used. Code could be changed to any ollama model currently available.
-model = OllamaLLM(model="llama3.2")
 
 
 @app.route('/')
@@ -125,8 +123,8 @@ def ask():
 }
 
     if user_input:
-        # Select the appropriate template
-        if custom_prompt: #If user enters a custom template it will be made here for the AI to be personalized as 
+    # Select the appropriate template
+        if custom_prompt:  
             template = f"""
             {custom_prompt}. Be whatever it says.
             Here is the conversation history: {{context}}
@@ -135,10 +133,9 @@ def ask():
 
             Answer: 
             """
-            # Save the custom template
             templates["custom"] = template
 
-        elif last_customPrompt:#If there is a last custom prompt created upon opening the chat it is passed to the AI model instead
+        elif last_customPrompt:  
             template = f"""
             {last_customPrompt}
             Here is the conversation history: {{context}}
@@ -147,35 +144,30 @@ def ask():
 
             Answer: 
             """
-            # Save the custom template
             templates["custom"] = template
         else:
             template = templates.get(model_type, templates["assistant"])
 
-        # Create the prompt
-        prompt = ChatPromptTemplate.from_template(template)
-        chain = prompt | model
+        # Format the template with the context and user question
+        formatted_prompt = template.format(context=context, question=user_input)
 
         print(f"Context: {context}")
         print(f"User input: {user_input}")
         print(f"Template: {template}")
-        print(f"Model: {model}")
 
-
-
-        # Get the response from the Llama model
-        # Attempt to invoke the model
+        # Directly call the model instead of using chain.invoke
         try:
-            result = chain.invoke({"context": context, "question": user_input})
+            response = ollama.generate(model="llama3.2", prompt=formatted_prompt)
+            result = response['response'].strip()
         except Exception as e:
-            print(f"Error during invocation: {e}")
+            print(f"Error during model call: {e}")
             result = "Sorry, something went wrong."
 
-        # Strip whitespace and return the result
-        result = result.strip() if result else "Sorry, I didn't get that."
-
         print(f"Result: {result}")
-        # Add user input and bot response to context for history
+
+        # Add user input and bot response to context
+        context += f"\nUser: {user_input}\nBot: {result}"
+
         return jsonify({"answer": result})
     
     return jsonify({"error": "No question provided"}), 400
@@ -404,4 +396,4 @@ def reset_context():
     return jsonify({"status": "success"})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run()
