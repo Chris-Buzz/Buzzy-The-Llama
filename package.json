@@ -1,0 +1,50 @@
+{
+  "name": "buzzy-the-llama",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^34.0.2",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "files": [
+      "main.js",
+      "package.json",
+      "frontend/**"
+    ],
+    "extraResources": [
+      {
+        "from": "llama.exe",
+        "to": "llama.exe"
+      },
+      {
+        "from": "venv/",
+        "to": "venv"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "./assets/Llama Icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "./assets/Llama Icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "./assets/Llama Icon.png"
+    }
+  },
+  "description": "",
+  "dependencies": {
+    "ps-tree": "^1.2.0",
+    "tree-kill": "^1.2.2"
+  }
+}
