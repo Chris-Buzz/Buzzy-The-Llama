@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const micButton = document.getElementById('mic-button');
     const newChatButton = document.getElementById('new-chat-button');
     const questionInput = document.getElementById('question');
-    const popupMessage = document.getElementById('popup-message');
     const savedChatsList = document.getElementById('saved-chats-list');
     const modelSelect = document.getElementById('model-select');
     const customPrompt = document.getElementById('custom-prompt');
@@ -20,9 +19,33 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatNameInput = document.getElementById('chat-name');;
     let firstEntry = true;
     let chatSaved = false;
-
     const themeSwitch = document.getElementById('theme-switch');
+    const sidebar = document.getElementById("sidebar");
+    const toggleButton = document.getElementById("toggle-sidebar");
+    const renameModal = document.getElementById("renameModal");
+    const newChatNameInput = document.getElementById("newChatName");
+    const submitRenameButton = document.getElementById("submitRename");
+    const cancelRenameButton = document.getElementById("cancelRename");
     
+
+
+    toggleButton.addEventListener("click", function () {
+        if (sidebar.classList.contains("collapsed")) {
+        sidebar.classList.remove("collapsed");
+        sidebar.classList.add("expanding");
+
+        setTimeout(() => {
+            sidebar.classList.remove("expanding");
+        }, 300); // Remove animation class after animation completes
+        } else {
+        sidebar.classList.add("collapsing");
+
+        setTimeout(() => {
+            sidebar.classList.remove("collapsing");
+            sidebar.classList.add("collapsed");
+        }, 300); // Wait for animation to finish before hiding completely
+        }
+    });
         // Load the saved theme from local storage
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
@@ -77,10 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
         saveChatModal.style.display = 'none';
     });
 
-    saveChatNoButton.addEventListener('click', function() {
-        resetChat();
-        saveChatModal.style.display = 'none';
-    });
 
     saveChatCancelButton.addEventListener('click', function() {
         saveChatModal.style.display = 'none';
@@ -94,12 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Add event listener for focus on the input field
-    questionInput.addEventListener('focus', function() {
-        if (firstEntry && modelSelect.value === 'comedic') {
-            showPopupMessage();
-        }
-    });
 
     // Show custom prompt textarea if "Custom" is selected
     modelSelect.addEventListener('change', function() {
@@ -145,47 +158,12 @@ document.addEventListener('DOMContentLoaded', function() {
             default:
                 questionInput.placeholder = "Ask me anything...";
         }
-
-        if (firstEntry && modelSelect.value === 'comedic') {
-            showPopupMessage();
-        } else {
-            popupMessage.classList.remove('visible');
-        }
     });
 
-    let lastRandomIndex = -1;
-
-    function showPopupMessage() {
-        if (modelSelect.value !== 'comedic') return;
-    
-        const messages = [
-            "Seriously, ask literally anything!",
-            "Go ahead, don't be shy!",
-            "What's on your mind?",
-            "Ask me anything you want!"
-        ];
-    
-        let randomIndex;
-        do {
-            randomIndex = Math.floor(Math.random() * messages.length);
-        } while (randomIndex === lastRandomIndex);
-    
-        lastRandomIndex = randomIndex;
-        const randomMessage = messages[randomIndex];
-    
-        popupMessage.classList.remove('visible');
-        void popupMessage.offsetWidth; // Trigger reflow to reset the animation
-        popupMessage.textContent = randomMessage;
-        popupMessage.classList.add('visible');
-    }
 
     async function askQuestion() {
-        if (firstEntry) {
-            firstEntry = false;
-            popupMessage.classList.remove('visible');
-        }
 
-        const question = document.getElementById('question').value;
+    const question = document.getElementById('question').value;
         if (question.trim() === "") return;  // Prevent empty questions
 
         const modelType = modelSelect.value;
@@ -355,42 +333,62 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
 
-      window.renameChat = function(chatName) {
-        // Create a modal or prompt to get the new name
-        const newChatName = prompt("Enter a new name for the chat:", chatName);
-    
-        if (newChatName) {
-            if(newChatName == chatName){
-                openChat(chatName);
-            }
-            else{
-                updateChatName(chatName, newChatName); // Send the new chat name to the server to update it
-            }
-    
-        }
-        
+    window.renameChat = function(chatName) {
+        newChatNameInput.value = chatName; // Pre-fill the input with the current chat name
+        newChatNameInput.defaultValue = chatName; // Set default value for comparison
+        renameModal.style.display = "flex"; // Show the modal
     };
-
+    
+    // Close the modal without renaming
+    cancelRenameButton.onclick = function() {
+        renameModal.style.display = "none"; // Hide the modal
+    };
+    
+    // Handle renaming the chat
+    submitRenameButton.onclick = async function() {
+        const newChatName = newChatNameInput.value.trim(); // Get the new chat name
+        const oldChatName = newChatNameInput.defaultValue; // Get the previous chat name
+    
+        if (!newChatName) {
+            alert("Please enter a valid name!"); // Alert if the name is empty
+            return;
+        }
+    
+        if (newChatName === oldChatName) {
+            renameModal.style.display = "none"; // No changes, just close modal
+            return;
+        }
+    
+        try {
+            await updateChatName(oldChatName, newChatName); // Update the chat name
+            renameModal.style.display = "none"; // Close the modal after renaming
+            loadSavedChats(); // Reload chat list to reflect the changes
+        } catch (error) {
+            console.error('Error renaming chat:', error);
+            alert('Failed to rename chat due to an error.');
+        }
+    };
+    
+    // Update the chat name on the server
     async function updateChatName(oldName, newName) {
         try {
-            const response = await fetch(`/update_chat_name/${oldName}`, {
+            const response = await fetch(`/update_chat_name/${encodeURIComponent(oldName)}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ newName: newName })
             });
     
-            if (response.ok) {
-                alert('Chat renamed successfully!');
-                loadSavedChats(); // Reload the list to show the updated name
-            } else {
+            if (!response.ok) {
                 const data = await response.json();
-                alert(`Failed to rename chat. Error: ${data.error}`);
+                throw new Error(data.error || 'Unknown error');
             }
+    
+            alert('Chat renamed successfully!');
         } catch (error) {
-            console.error('Error renaming chat:', error);
-            alert('Failed to rename chat due to an error.');
+            alert(`Failed to rename chat. Error: ${error.message}`);
+            throw error; // Rethrow error to prevent modal from closing on failure
         }
-    }
+    }    
     
     
 
@@ -467,7 +465,7 @@ document.addEventListener('DOMContentLoaded', function() {
         customPrompt.value = '';
         modelSelect.value = 'basic';
         customPrompt.style.display = 'none';
-        questionInput.placeholder = "Ask me anything..."; // Reset placeholder to comedic
+        questionInput.placeholder = "Ask me anything..."; 
     }
 
     async function newChat() {
@@ -518,4 +516,3 @@ document.addEventListener('DOMContentLoaded', function() {
         micButton.style.display = 'none'; // Hide the mic button if speech recognition is not supported
     }
 })
-
