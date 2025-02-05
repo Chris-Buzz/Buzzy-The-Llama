@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const micButton = document.getElementById('mic-button');
     const newChatButton = document.getElementById('new-chat-button');
     const questionInput = document.getElementById('question');
+    const popupMessage = document.getElementById('popup-message');
     const savedChatsList = document.getElementById('saved-chats-list');
     const modelSelect = document.getElementById('model-select');
     const customPrompt = document.getElementById('custom-prompt');
@@ -113,6 +114,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Add event listener for focus on the input field
+    questionInput.addEventListener('focus', function() {
+        if (firstEntry && modelSelect.value === 'comedic') {
+            showPopupMessage();
+        }
+    });
 
     // Show custom prompt textarea if "Custom" is selected
     modelSelect.addEventListener('change', function() {
@@ -162,8 +169,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     async function askQuestion() {
+        if (firstEntry) {
+            firstEntry = false;
+            popupMessage.classList.remove('visible');
+        }
 
-    const question = document.getElementById('question').value;
+        const question = document.getElementById('question').value;
         if (question.trim() === "") return;  // Prevent empty questions
 
         const modelType = modelSelect.value;
@@ -465,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
         customPrompt.value = '';
         modelSelect.value = 'basic';
         customPrompt.style.display = 'none';
-        questionInput.placeholder = "Ask me anything..."; 
+        questionInput.placeholder = "Ask me anything..."; // Reset placeholder to comedic
     }
 
     async function newChat() {
