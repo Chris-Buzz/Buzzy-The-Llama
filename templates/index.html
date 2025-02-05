@@ -4,15 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buzzy the Llama</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
   <div id="app-container">
-    <div id="sidebar">
-      <label class="switch">
-        <input type="checkbox" id="theme-switch">
-        <span class="slider round"></span>
-      </label>
+    <div class="sidebar" id="sidebar" >
+      <button id="toggle-sidebar">☰</button>
       <h2>Saved Chats</h2>
       <ul id="saved-chats-list"></ul>
       <button id="new-chat-button">New Chat</button>
@@ -21,32 +18,36 @@
       <h1 id="app-heading" class="tracking-in-expand">Welcome to Buzzy the Llama!</h1>
       <div id="conversation"></div>
       <div id="input-container">
-        <div class="search-bar">
-          <button id="mic-button">🎙️</button>
-          <textarea id="question" placeholder="Ask me anything..."></textarea>
-          <button id="send-button">➤</button>
-        </div>
-        <button id="save-button">Save Chat</button>
-        <div id="popup-message" class="hidden"></div> <!-- Add microphone button -->
+          <div class="search-bar">
+              <button id="mic-button">🎙️</button>
+              <textarea id="question" placeholder="Ask me anything..."></textarea>
+              <button id="send-button">➤</button>
+          </div>
+          <button id="save-button">Save Chat</button>
+          <div id="popup-message" class="hidden"></div>
       </div>
       <div id="model-container">
-        <label for="model-select">Choose your model:</label>
-        <select id="model-select">
-          <option value="basic">Basic</option>
-          <option value="serious">Serious</option>
-          <option value="assistant">Personal Assistant</option>
-          <option value="historian">History Buff</option>
-          <option value="philosopher">Philosopher</option>
-          <option value="writer">Writer</option>
-          <option value="coder">Coder</option>
-          <option value="comedic">Comedic Relief</option>
-          <option value="sports buff">Sports Buff</option>
-          <option value="custom">Custom</option>
-        </select>
-        <textarea id="custom-prompt" placeholder="Enter your custom prompt..." style="display:none;"></textarea>
+          <label for="model-select">Choose your model:</label>
+          <select id="model-select">
+              <option value="basic">Basic</option>
+              <option value="serious">Serious</option>
+              <option value="assistant">Personal Assistant</option>
+              <option value="historian">History Buff</option>
+              <option value="philosopher">Philosopher</option>
+              <option value="writer">Writer</option>
+              <option value="coder">Coder</option>
+              <option value="comedic">Comedic Relief</option>
+              <option value="sports buff">Sports Buff</option>
+              <option value="custom">Custom</option>
+          </select>
+          <textarea id="custom-prompt" placeholder="Enter your custom prompt..." style="display:none;"></textarea>
+          <label class="switch">
+              <input type="checkbox" id="theme-switch">
+              <span class="slider round"></span>
+          </label>
       </div>
-    </div>
   </div>
+</div>
 
   <!-- Modal for saving chat -->
   <div id="save-chat-modal" class="modal">
@@ -54,7 +55,6 @@
       <p id = "save-chat-modal-text"> Do you want to save the current chat before starting a new one?</p>
       <input type="text" id="chat-name" placeholder="Enter chat name">
       <button id="save-chat-yes">Yes</button>
-      <button id="save-chat-no">No</button>
       <button id="save-chat-cancel">Cancel</button>
     </div>
   </div>
@@ -66,6 +66,17 @@
         <button id="delete-chat-no">No</button>
     </div>
 </div>
+
+<!-- Modal HTML structure -->
+<div id="renameModal" class="modal">
+  <div class="modal-content">
+      <h2>Rename Chat</h2>
+      <input type="text" id="newChatName" placeholder="Enter new chat name" />
+      <button id="submitRename">Rename</button>
+      <button id="cancelRename">Cancel</button>
+  </div>
+</div>
+
 
   <script src="/static/app.js"></script>
 </body>
