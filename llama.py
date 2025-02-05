@@ -22,19 +22,28 @@ last_customPrompt = ""
 def static_files(filename):
     return send_from_directory('static', filename)
 
-
 @app.route('/ask', methods=['POST']) #Method that takes the user input, modelType and custom prompt from the frontend, retrieves the data and passes it to the ollama AI model for a response
 def ask():
-    global context, custom_prompt, conversation , last_customPrompt, last_modelType
+    global context, custom_prompt, conversation, last_customPrompt, last_modelType, last_opened_chat
+    
     data = request.json
     user_input = data.get("question")
-    model_type = data.get("modelType")
+    model_type = data.get("modelType", "basic")
     custom_prompt = data.get("customPrompt")
-    last_customPrompt = custom_prompt
-    if (conversation):
-        context = conversation #Set the context of the conversation equal to the ongoing conversation if there is one. This should occur after a chat is saved
-    else:
-        context += f"User: {user_input}\n" #Otherwise set the contex equal to all user inputs 
+    chat_name = data.get("chatName", last_opened_chat)  # Use last_opened_chat as default
+    
+    last_modelType = model_type
+    last_customPrompt = custom_prompt if custom_prompt else last_customPrompt
+
+    if chat_name:
+        sanitized_chat_name = chat_name.replace(" ", "_").replace("/", "_")
+        chat_file = f"{sanitized_chat_name}.json"
+
+        if os.path.exists(chat_file):  # Load existing saved chat context
+            with open(chat_file, 'r') as file:
+                saved_chat = json.load(file)
+                context = saved_chat.get("context", context)  # Keep current context if missing
+    
 
     # Templates for different pre-made conversation types
     templates = {
@@ -118,11 +127,11 @@ def ask():
     Answer: 
     """
 }
-    
 
     if user_input:
-        # Select the appropriate template
-        if custom_prompt and model_type == 'custom': #If user enters a custom template it will be made here for the AI to be personalized as 
+    # Select the appropriate template
+        context += f"\nUser: {user_input}"
+        if custom_prompt:  
             template = f"""
             {custom_prompt}. Be whatever it says.
             Here is the conversation history: {{context}}
@@ -131,10 +140,9 @@ def ask():
 
             Answer: 
             """
-            # Save the custom template
             templates["custom"] = template
 
-        elif last_customPrompt and model_type == 'custom':#If there is a last custom prompt created upon opening the chat it is passed to the AI model instead
+        elif last_customPrompt:  
             template = f"""
             {last_customPrompt}
             Here is the conversation history: {{context}}
@@ -143,44 +151,30 @@ def ask():
 
             Answer: 
             """
-            # Save the custom template
             templates["custom"] = template
         else:
-            template = templates.get(model_type, templates["assistant"])    
+            template = templates.get(model_type, templates["assistant"])
 
-        # Create the prompt
-        response = ollama.generate(
-                model="llama3.2",
-                prompt=f"""
-                    {template}.
-                    Here is the conversation history: {context}
-
-                    Question: {user_input}
-
-                    Answer: 
-
-                
-                """
-            )
+        # Format the template with the context and user question
+        formatted_prompt = template.format(context=context, question=user_input)
 
         print(f"User input: {user_input}")
         print(f"Template: {template}")
-        print(f"Model: {model_type}")
 
-
-
-        # Get the response from the Llama model
-        # Attempt to invoke the model
-
-        # Strip whitespace and return the result
-        result = response['response'].strip() if response else "Sorry, I didn't get that."
+        # Directly call the model instead of using chain.invoke
+        try:
+            response = ollama.generate(model="llama3.2", prompt=formatted_prompt)
+            result = response['response'].strip()
+        except Exception as e:
+            print(f"Error during model call: {e}")
+            result = "Sorry, something went wrong."
 
         print(f"Result: {result}")
 
-        ai_response = response["response"]
-        context += f"User: {user_input}\nAI: {ai_response}\n"
+        # Add user input and bot response to context
+        context += f"\nBot: {result}"
         print(f"Context: {context}")
-        # Add user input and bot response to context for history
+
         return jsonify({"answer": result})
     
     return jsonify({"error": "No question provided"}), 400
@@ -291,10 +285,17 @@ def load_all_chats():
 
     for chat_name in chat_names:
         try:
-            with open(f"{chat_name.replace(' ', '_').replace('/', '_')}.json", 'r') as file:
-                chat_data = json.load(file)
-                chat_data['chatName'] = chat_name 
-                chats.append(chat_data) 
+            safe_chat_name = chat_name.replace(' ', '_').replace('/', '_')
+            chat_file_path = f"{safe_chat_name}.json"
+
+            if os.path.exists(chat_file_path):
+                with open(chat_file_path, 'r') as file:
+                    chat_data = json.load(file)
+                    chat_data['chatName'] = chat_name  
+                    chats.append(chat_data)
+            else:
+                print(f"Chat file '{chat_file_path}' not found.")
+
         except FileNotFoundError:
             print(f"Chat file '{chat_name}.json' not found.")
         except json.JSONDecodeError:
@@ -404,7 +405,8 @@ def update_chat_name(old_name):#Function that allows users to update/edit a prev
 #Function to reset chat context when a new chat is created
 @app.route('/reset_context', methods=['POST'])
 def reset_context():
-    global context
+    global context, last_opened_chat
+    last_opened_chat = None
     context = ""
     return jsonify({"status": "success"})
 
