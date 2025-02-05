@@ -6,8 +6,6 @@ import json #Imported for handling Json data
 
 app = Flask(__name__)
 
-# Initialize the model that will be used. Code could be changed to any ollama model currently available.
-
 
 @app.route('/')
 def index():
@@ -32,12 +30,11 @@ def ask():
     user_input = data.get("question")
     model_type = data.get("modelType")
     custom_prompt = data.get("customPrompt")
-    last_modelType = data.get("modelType", "basic") 
     last_customPrompt = custom_prompt
     if (conversation):
         context = conversation #Set the context of the conversation equal to the ongoing conversation if there is one. This should occur after a chat is saved
     else:
-        context += user_input #Otherwise set the contex equal to all user inputs 
+        context += f"User: {user_input}\n" #Otherwise set the contex equal to all user inputs 
 
     # Templates for different pre-made conversation types
     templates = {
@@ -121,10 +118,11 @@ def ask():
     Answer: 
     """
 }
+    
 
     if user_input:
-    # Select the appropriate template
-        if custom_prompt:  
+        # Select the appropriate template
+        if custom_prompt and model_type == 'custom': #If user enters a custom template it will be made here for the AI to be personalized as 
             template = f"""
             {custom_prompt}. Be whatever it says.
             Here is the conversation history: {{context}}
@@ -133,9 +131,10 @@ def ask():
 
             Answer: 
             """
+            # Save the custom template
             templates["custom"] = template
 
-        elif last_customPrompt:  
+        elif last_customPrompt and model_type == 'custom':#If there is a last custom prompt created upon opening the chat it is passed to the AI model instead
             template = f"""
             {last_customPrompt}
             Here is the conversation history: {{context}}
@@ -144,30 +143,44 @@ def ask():
 
             Answer: 
             """
+            # Save the custom template
             templates["custom"] = template
         else:
-            template = templates.get(model_type, templates["assistant"])
+            template = templates.get(model_type, templates["assistant"])    
 
-        # Format the template with the context and user question
-        formatted_prompt = template.format(context=context, question=user_input)
+        # Create the prompt
+        response = ollama.generate(
+                model="llama3.2",
+                prompt=f"""
+                    {template}.
+                    Here is the conversation history: {context}
 
-        print(f"Context: {context}")
+                    Question: {user_input}
+
+                    Answer: 
+
+                
+                """
+            )
+
         print(f"User input: {user_input}")
         print(f"Template: {template}")
+        print(f"Model: {model_type}")
 
-        # Directly call the model instead of using chain.invoke
-        try:
-            response = ollama.generate(model="llama3.2", prompt=formatted_prompt)
-            result = response['response'].strip()
-        except Exception as e:
-            print(f"Error during model call: {e}")
-            result = "Sorry, something went wrong."
+
+
+        # Get the response from the Llama model
+        # Attempt to invoke the model
+
+        # Strip whitespace and return the result
+        result = response['response'].strip() if response else "Sorry, I didn't get that."
 
         print(f"Result: {result}")
 
-        # Add user input and bot response to context
-        context += f"\nUser: {user_input}\nBot: {result}"
-
+        ai_response = response["response"]
+        context += f"User: {user_input}\nAI: {ai_response}\n"
+        print(f"Context: {context}")
+        # Add user input and bot response to context for history
         return jsonify({"answer": result})
     
     return jsonify({"error": "No question provided"}), 400
@@ -396,4 +409,4 @@ def reset_context():
     return jsonify({"status": "success"})
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
