@@ -1,24 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
+    //Get all elements from the index and attribute them to variables here
     const sendButton = document.getElementById('send-button');
     const saveButton = document.getElementById('save-button');
     const micButton = document.getElementById('mic-button');
     const newChatButton = document.getElementById('new-chat-button');
     const questionInput = document.getElementById('question');
-    const popupMessage = document.getElementById('popup-message');
     const savedChatsList = document.getElementById('saved-chats-list');
     const modelSelect = document.getElementById('model-select');
     const customPrompt = document.getElementById('custom-prompt');
     const saveChatModal = document.getElementById('save-chat-modal');
     const saveChatModalText = document.getElementById('save-chat-modal-text');
     const saveChatYesButton = document.getElementById('save-chat-yes');
-    const saveChatNoButton = document.getElementById('save-chat-no');
     const saveChatCancelButton = document.getElementById('save-chat-cancel');
     const deleteChatModal = document.getElementById('delete-chat-modal');
     const deleteChatModalText = document.getElementById('delete-chat-modal-text');
     const deleteChatYesButton = document.getElementById('delete-chat-yes');
     const deleteChatNoButton = document.getElementById('delete-chat-no');
-    const chatNameInput = document.getElementById('chat-name');;
-    let firstEntry = true;
+    const chatNameInput = document.getElementById('chat-name');
     let chatSaved = false;
     const themeSwitch = document.getElementById('theme-switch');
     const sidebar = document.getElementById("sidebar");
@@ -115,11 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add event listener for focus on the input field
-    questionInput.addEventListener('focus', function() {
-        if (firstEntry && modelSelect.value === 'comedic') {
-            showPopupMessage();
-        }
-    });
 
     // Show custom prompt textarea if "Custom" is selected
     modelSelect.addEventListener('change', function() {
@@ -169,11 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     async function askQuestion() {
-        if (firstEntry) {
-            firstEntry = false;
-            popupMessage.classList.remove('visible');
-        }
-
         const question = document.getElementById('question').value;
         if (question.trim() === "") return;  // Prevent empty questions
 
@@ -468,7 +456,6 @@ document.addEventListener('DOMContentLoaded', function() {
         firstEntry = true;
         chatSaved = false;
         resetCustom();
-        popupMessage.classList.remove('visible');
         fetch('/reset_context', { method: 'POST' });
     }
 
