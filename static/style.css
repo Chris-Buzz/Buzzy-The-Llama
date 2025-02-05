@@ -41,6 +41,13 @@ body.dark-mode #sidebar {
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
+body.dark-mode #sidebar.collapsed{
+  background-color: #2c2c2c;
+  color: #fff;
+  border: none; /* Remove any border */
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
 body.dark-mode #saved-chats-list li {
   background-color: #252525;
   color: #fff;
@@ -173,7 +180,31 @@ body.dark-mode #mic-button:hover {
 }
 
 /* Sidebar */
+#toggle-sidebar {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.3s;
+  z-index: 1000; 
+}
+
+#toggle-sidebar:hover {
+  background-color: #5db463;
+  transform: scale(1.1);
+}
+
 #sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   width: 25%;
   min-width: 300px;
   background-color: #1f1f1f;
@@ -181,14 +212,79 @@ body.dark-mode #mic-button:hover {
   box-sizing: border-box;
   overflow-y: auto;
   color: #fff;
-  border-top-left-radius: 10px; /* Round top-left corner */
+  border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
   position: relative;
 }
 
+
+#sidebar.collapsed {
+  width: 70px;
+  min-width: 70px;
+  padding: 0px;
+  overflow: hidden;
+}
+
+#sidebar.collapsed h2,
+#sidebar.collapsed #saved-chats-list,
+#sidebar.collapsed #new-chat-button {
+  display: none;
+}
+
+#sidebar.collapsing {
+  animation: slideOutSidebar 0.3s ease-out;
+}
+#sidebar.collapsing h2,
+#sidebar.collapsing #saved-chats-list,
+#sidebar.collapsing #new-chat-button {
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+@keyframes slideOutSidebar {
+  from {
+    opacity: 1;
+    width: 25%;
+    min-width: 300px;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 1;
+    width: 70px;
+    min-width: 70px;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInSidebar {
+  from {
+    opacity: 0;
+    width: 70px;
+    min-width: 70px;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 1;
+    width: 25%;
+    min-width: 300px;
+    transform: translateX(0);
+  }
+}
+
+#sidebar.expanding {
+  animation: slideInSidebar 0.35s ease-out;
+}
+
+#sidebar.expanding h2,
+#sidebar.expanding #saved-chats-list,
+#sidebar.expanding #new-chat-button {
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
 #sidebar h2 {
-  margin: 0 0 20px 120px;
+  margin: 0 0 20px 0;
   font-size: 1.3em;
   color: #4caf50;
   text-align: center;
@@ -196,68 +292,6 @@ body.dark-mode #mic-button:hover {
   display: inline-block;
 }
 
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-  bottom: 10px;
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #191a19;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #191a19;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
 
 #new-chat-button{
   padding: 10px 15px; /* Adjust padding for smaller buttons */
@@ -289,19 +323,19 @@ input:checked + .slider:before {
   margin-bottom: 10px;
   border-radius: 8px;
   display: flex;
-  justify-content: space-between; /* Space out the left and right groups */
+  justify-content: space-between; 
   align-items: center;
   transition: transform 0.3s, background-color 0.3s;
 }
 
 #saved-chats-list li .left-buttons,
 #saved-chats-list li .right-buttons {
-  display: flex; /* Use flexbox to group the buttons */
+  display: flex; 
   align-items: center;
 }
 
 #saved-chats-list li .left-buttons {
-  margin-right: 20px; /* Optional: Adds space between button+text and the right buttons */
+  margin-right: 20px; 
 }
 
 #saved-chats-list li .left-buttons button,
@@ -487,7 +521,7 @@ input:checked + .slider:before {
   border-radius: 8px;        /* Keep rounded corners */
   background-color: #4caf50; /* Matching green color */
   color: #fff;     
-  font-family: 'Roboto', sans-serif;          /* White text */
+  font-family: 'Roboto', sans-serif;        /* White text */
   border: none;              /* No border for a cleaner look */
   cursor: pointer;          /* Pointer cursor on hover */
   transition: background-color 0.3s, transform 0.3s;
@@ -506,7 +540,11 @@ input:checked + .slider:before {
   padding: 15px;
   border-radius: 8px;
   margin-top: 15px;
+  position: relative; /* Ensure relative positioning */
+  width: 96.5%; /* Allow flexible width */
 }
+
+
 
 #model-container label {
   font-size: 16px;
@@ -521,6 +559,7 @@ input:checked + .slider:before {
   border: 1px solid #a3a3a3;
   border-radius: 8px;
   width: 20%;
+  min-width: 15%;
   margin-bottom: 15px;
   transition: border-color 0.3s ease-in-out;
   cursor: pointer; /* Change cursor to pointer */
@@ -561,6 +600,70 @@ input:checked + .slider:before {
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
+/* Align switch on the right */
+.switch {
+  position: absolute;
+  top: 50px; /* Align switch with the top */
+  right: 20px;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #191a19;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #191a19;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
 
 
 @keyframes buttonSlideIn {
@@ -581,53 +684,106 @@ input:checked + .slider:before {
 
 /* Modal Background */
 .modal {
-  display: none;
+  display: none; /* Ensures modal is hidden initially */
   position: fixed;
   z-index: 999;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Darker background for better contrast */
-  animation: fadeIn 0.6s ease-in-out; /* Smooth fade-in effect */
+  background-color: rgba(0, 0, 0, 0.7);
+  animation: fadeIn 0.4s ease-in-out;
+  align-items: center;
+  justify-content: center; /* Prevents accidental flashes */
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
-/* Modal Content */
 .modal-content {
+  position: fixed; /* Fix position to center it */
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center it vertically and horizontally */
   background-color: #fff;
-  margin: 5% auto; /* Ensures modal is centered */
-  padding: 40px 30px; /* More padding for a spacious feel */
-  border-radius: 15px; /* More rounded corners for a modern look */
+  padding: 40px 30px;
+  border-radius: 15px;
   width: 85%;
-  max-width: 500px; /* A smaller max-width for better proportions */
+  max-width: 500px;
   text-align: center;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
-  animation: slideIn 0.6s ease-out;
-  transform: translateY(-50px); /* Starts slightly above */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.s ease-in-out; /* Smooth transition for scaling */
+  animation: fadeInZoom 0.5s ease-out; /* Zoom-in effect when the modal appears */
 }
 
-/* Modal Button */
-.modal-content button {
-  margin-top: 25px; /* More space above the button */
-  padding: 14px 32px;
-  background-color: #4caf50; /* Original green color */
-  color: #fff;
-  border: none;
-  border-radius: 50px; /* Circular button shape */
+
+/* Modal Title */
+.modal-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Input Field */
+.modal-content input {
+  width: 70%;
+  padding: 12px;
   font-size: 18px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+  text-align: center;
+}
+
+.modal-content input:focus {
+  border-color: #4caf50;
+}
+
+/* Modal Buttons */
+.modal-content button {
+  margin-top: 20px;
+  padding: 12px 32px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 30px; /* Rounded buttons */
+  font-size: 18px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft button shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Hover Effect for the Button */
+/* Button Hover Effect */
 .modal-content button:hover {
-  background-color: #45a049; /* Darker green on hover */
-  transform: translateY(-5px);
-  transform:scale(1.1); /* Slightly raised on hover */
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); /* Increased shadow */
+  background-color: #45a049;
+  transform: scale(1.08); /* Enlarges slightly */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* Cancel Button */
+.cancel-button {
+  background-color: #d9534f;
+}
+
+.cancel-button:hover {
+  background-color: #c9302c;
+}
+
+/* Close Button */
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.close-button:hover {
+  color: #000;
+}
 /* Chat-name Textarea */
 #chat-name {
   padding: 15px; /* Increased padding */
@@ -705,6 +861,17 @@ input:checked + .slider:before {
   }
 }
 
+@keyframes fadeInZoom {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8); /* Starts off smaller and invisible */
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1); /* Ends fully visible and at normal size */
+  }
+}
+
 /* ----------------------------------------------
  * Generated by Animista on 2025-1-22 0:50:37
  * Licensed under FreeBSD License.
@@ -750,60 +917,322 @@ input:checked + .slider:before {
   }
 }
 
-@media (max-width: 680px) {
+/* === TABLET & SMALLER SCREENS (768px) === */
+/* === Medium Screens (768px and below) === */
+@media (max-width: 768px) {
   #app-container {
     flex-direction: column;
+    width: 100%;
   }
 
   #sidebar {
     width: 100%;
-    height: auto;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 0;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 0;
+    text-align: center;
+    padding: 20px 0;
+    z-index: 1000;
+    background-color: #1f1f1f;
+    transition: all 0.3s ease;
+  }
+
+  #sidebar.collapsed {
+    width: 40px;  /* Collapse to 40px */
+    min-width: 40px;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease; /* Smooth collapse transition */
   }
 
   #chatbox {
-    width: 100%;
+    width: calc(100% - 40px);
+    min-width: 700px;  /* Take up the remaining space */
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 40px; /* Shift the chatbox to the right when sidebar is collapsed */
+    padding-top: 80px; /* Adjust padding as needed */
+    background-color: #fff;
+    transition: left 0.3s ease; /* Smooth transition for chatbox movement */
   }
 
-  #send-button{
-    padding: 8px 18px; /* Wider button */
-    margin-left: 5px;
-    border-radius: 8px;
-    background-color: #4caf50;
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
+  /* Sidebar content - hide when collapsed */
+  #sidebar.collapsed h2,
+  #sidebar.collapsed #saved-chats-list,
+  #sidebar.collapsed #new-chat-button {
+    display: none;
   }
 
-  #save-button {
-    padding: 10px 16px;        /* Smaller padding */
-    font-size: 15px;           /* Consistent font size *//* Match the bold text style */
-    border-radius: 8px;        /* Keep rounded corners */
-    background-color: #4caf50; /* Matching green color */
-    color: #fff;     
-    font-family: 'Roboto', sans-serif;          /* White text */
-    border: none;              /* No border for a cleaner look */
-    cursor: pointer;          /* Pointer cursor on hover */
-    transition: background-color 0.3s, transform 0.3s;
-  }
-
-  #mic-button {
-    padding: 8px 12px;
-    margin-right: 16px;
-    background-color: #f0f0f0; /* Faint green background */
-    border-radius: 10px;
-    font-size: 22px;
-    border: none;
-    color: #4caf50;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
+  /* Ensure the toggle button remains visible */
+  #toggle-sidebar {
+    top: 20px;
+    padding: 6px 8px;
+    left: 6px;
   }
 
 
+  /* Adjust buttons for smaller devices */
+  #send-button, #save-button, #mic-button, #new-button {
+    padding: 6px 14px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  #question {
+    height: 25px;
+  }
+
+  #custom-prompt {
+    height: 20px;
+  }
+
+  #model-container, #input-container {
+    height: auto;
+    padding: 10px;
+  }
+
+  h1, h2, h3 {
+    font-size: 1.2rem;
+  }
 }
+
+/* === MOBILE PHONES (480px) === */
+@media (max-width: 480px) {
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90%;
+    background-color: #4caf50;
+    color: white;
+    padding: 8px;
+    z-index: 1000;
+  }
+
+  /* Chatbox should take up full screen minus the sidebar width when collapsed */
+  #chatbox {
+    width: calc(100% - 40px);
+    min-width: 420px; /* Take up remaining space after sidebar collapse */
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 40px; /* Adjust to match collapsed sidebar */
+    padding-top: 60px;
+  }
+
+  #sidebar.collapsed {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: all 0.3s ease;
+  }
+
+  /* Toggle button remains visible */
+  #toggle-sidebar {
+    top: 20px;
+    padding: 5px 7px;
+    left: 5px;
+  }
+
+
+  #send-button, #save-button, #mic-button, #new-button {
+    padding: 5px 10px;
+    font-size: 10px;
+    border-radius: 5px;
+  }
+
+  #custom-prompt {
+    height: 25px;
+  }
+
+  #question {
+    height: 32px;
+  }
+
+  #model-container, #input-container {
+    height: auto;
+    padding: 8px;
+  }
+
+  h1, h2, h3 {
+    font-size: 1rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+}
+
+/* === ULTRA SMALL SCREENS (360px) === */
+@media (max-width: 360px) {
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90%;
+    background-color: #4caf50;
+    color: white;
+    padding: 8px;
+    z-index: 1000;
+  }
+
+  /* Chatbox should take up full screen minus the sidebar width when collapsed */
+  #chatbox {
+    width: calc(100% - 40px);
+    min-width: 300px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 40px; /* Adjust to match collapsed sidebar */
+    padding-top: 60px;
+  }
+
+  #sidebar.collapsed {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: all 0.3s ease;
+  }
+
+  /* Toggle button remains visible */
+  #toggle-sidebar {
+    top: 20px;
+    padding: 4px 6px;
+    left: 5px;
+  }
+
+  #send-button, #save-button, #mic-button, #new-button {
+    padding: 4px 8px;
+    font-size: 9px;
+    border-radius: 4px;
+  }
+
+  #custom-prompt {
+    height: 15px;
+  }
+
+  #question {
+    height: 20px;
+  }
+
+  #model-container, #input-container {
+    height: auto;
+    padding: 6px;
+  }
+
+  h1, h2, h3 {
+    font-size: 0.9rem;
+  }
+
+  h2 {
+    font-size: 0.9rem;
+  }
+}
+
+
+
+@media (max-width: 1024px) {
+  #app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: row;
+  }
+
+  #sidebar {
+      width: 25%;
+      height: 100vh;
+      border-radius: 10px;
+      padding: 15px;
+  }
+
+  #chatbox {
+      width: 75%;
+  }
+
+  #send-button, #save-button, #mic-button, #new-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+  }
+
+  #custom-prompt{
+    height: 20px;
+  } 
+  #question {
+    height: 35px;
+  }
+
+  #model-container, #input-container {
+      height: auto;
+      padding: 12px;
+  }
+
+  h1, h2, h3 {
+      font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+}
+
+
+@media (max-width: 1610px) {
+  #app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: row;
+  }
+
+  #sidebar {
+      width: 25%;
+      height: 100vh;
+      border-radius: 10px;
+      padding: 15px;
+  }
+
+  #chatbox {
+      width: 75%;
+  }
+
+  #send-button, #mic-button, #new-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+  }
+
+  #save-button{
+    font-size: 11px;
+  }
+
+  #question {
+    height: 45px;
+  }
+
+  #custom-prompt {
+    height: 25px; 
+  }
+
+  #model-container, #input-container {
+      height: auto;
+      padding: 15px;
+  }
+
+  h1, h2, h3 {
+      font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+}
+
