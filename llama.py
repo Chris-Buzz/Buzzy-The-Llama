@@ -43,6 +43,8 @@ def ask():
             with open(chat_file, 'r') as file:
                 saved_chat = json.load(file)
                 context = saved_chat.get("context", context)  # Keep current context if missing
+    else:
+        context = ''
     
 
     # Templates for different pre-made conversation types
