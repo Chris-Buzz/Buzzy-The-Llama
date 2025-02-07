@@ -4,6 +4,7 @@ import ollama
 import os #Imported for file operations(ex: deleting files)
 import json #Imported for handling Json data
 
+
 app = Flask(__name__)
 
 
@@ -25,27 +26,29 @@ def static_files(filename):
 @app.route('/ask', methods=['POST']) #Method that takes the user input, modelType and custom prompt from the frontend, retrieves the data and passes it to the ollama AI model for a response
 def ask():
     global context, custom_prompt, conversation, last_customPrompt, last_modelType, last_opened_chat
-    
     data = request.json
     user_input = data.get("question")
     model_type = data.get("modelType", "basic")
     custom_prompt = data.get("customPrompt")
-    chat_name = data.get("chatName", last_opened_chat)  # Use last_opened_chat as default
+    chat_name = last_opened_chat 
     
     last_modelType = model_type
     last_customPrompt = custom_prompt if custom_prompt else last_customPrompt
 
     if chat_name:
-        sanitized_chat_name = chat_name.replace(" ", "_").replace("/", "_")
+        sanitized_chat_name = chat_name.replace(" ","_").replace("/", "_")
         chat_file = f"{sanitized_chat_name}.json"
 
-        if os.path.exists(chat_file):  # Load existing saved chat context
+        if os.path.exists(chat_file):
             with open(chat_file, 'r') as file:
                 saved_chat = json.load(file)
-                context = saved_chat.get("context", context)  # Keep current context if missing
+                context = saved_chat.get("context", "")
+        else:
+            if not context:
+                context = ""
     else:
-        context = ''
-    
+        if not context:
+            context = ""
 
     # Templates for different pre-made conversation types
     templates = {
@@ -287,17 +290,10 @@ def load_all_chats():
 
     for chat_name in chat_names:
         try:
-            safe_chat_name = chat_name.replace(' ', '_').replace('/', '_')
-            chat_file_path = f"{safe_chat_name}.json"
-
-            if os.path.exists(chat_file_path):
-                with open(chat_file_path, 'r') as file:
-                    chat_data = json.load(file)
-                    chat_data['chatName'] = chat_name  
-                    chats.append(chat_data)
-            else:
-                print(f"Chat file '{chat_file_path}' not found.")
-
+            with open(f"{chat_name.replace(' ', '_').replace('/', '_')}.json", 'r') as file:
+                chat_data = json.load(file)
+                chat_data['chatName'] = chat_name 
+                chats.append(chat_data) 
         except FileNotFoundError:
             print(f"Chat file '{chat_name}.json' not found.")
         except json.JSONDecodeError:
@@ -413,4 +409,5 @@ def reset_context():
     return jsonify({"status": "success"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True) 
+
