@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     saveChatYesButton.addEventListener('click', async function() {
         await saveChat();
-        resetChat();
         saveChatModal.style.display = 'none';
     });
 
@@ -113,6 +112,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add event listener for focus on the input field
+    questionInput.addEventListener('focus', function() {
+    });
 
     // Show custom prompt textarea if "Custom" is selected
     modelSelect.addEventListener('change', function() {
@@ -289,7 +290,8 @@ document.addEventListener('DOMContentLoaded', function() {
             resetChat();
             chatNameInput.value = '';
             loadSavedChats();
-
+            questionInput.focus()
+            
             index++
         } else {
             const data = await saveResponse.json();
@@ -361,6 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             await updateChatName(oldChatName, newChatName); // Update the chat name
             renameModal.style.display = "none"; // Close the modal after renaming
+            questionInput.focus()
             loadSavedChats(); // Reload chat list to reflect the changes
         } catch (error) {
             console.error('Error renaming chat:', error);
@@ -410,6 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Failed to delete chat.');
         }
 
+        questionInput.focus()
         deleteChatModal.style.display = 'none'; // Close the modal
     });
 
@@ -513,4 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         micButton.style.display = 'none'; // Hide the mic button if speech recognition is not supported
     }
+
+
 })
+
